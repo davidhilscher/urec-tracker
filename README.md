@@ -4,6 +4,8 @@ A real-time capacity tracking system for James Madison University's University R
 
 ## Project Overview
 
+**Currently in MVP stage**
+
 This system displays live occupancy data for different areas within UREC (weight room, track, pool, etc.) to help students plan their visits and avoid overcrowding. The website is designed to be simple, accessible, and require no login or app download.
 
 ## Architecture
