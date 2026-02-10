@@ -128,7 +128,7 @@ MIT License - feel free to use for educational purposes
 
 ## 👥 Contact
 
-Project Link: [https://github.com/yourusername/jmu-urec-capacity](https://github.com/yourusername/jmu-urec-capacity)
+Project Link: [https://github.com/davidhilscher/urec-tracker](https://github.com/davidhilscher/urec-tracker)
 
 ## Acknowledgments
 

@@ -1,0 +1,6 @@
+# AWS SDK for Python
+boto3==1.34.30
+botocore==1.34.30
+
+# Lambda runtime includes boto3 by default
+# This file is mainly for local testing and documentation

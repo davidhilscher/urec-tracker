@@ -1,0 +1,148 @@
+{
+  "FunctionName": "urec-capacity-updater",
+  "Description": "Processes entry/exit events from UREC iPads and updates DynamoDB capacity counts",
+  "Runtime": "python3.11",
+  "Handler": "capacity_updater.lambda_handler",
+  "Role": "arn:aws:iam::YOUR_ACCOUNT_ID:role/urec-lambda-execution-role",
+  "Timeout": 30,
+  "MemorySize": 256,
+  "Environment": {
+    "Variables": {
+      "DYNAMODB_TABLE": "urec-capacity",
+      "AWS_REGION": "us-east-1",
+      "LOG_LEVEL": "INFO"
+    }
+  },
+  "Tags": {
+    "Project": "UREC-Capacity-Tracker",
+    "Environment": "Production"
+  },
+  "TracingConfig": {
+    "Mode": "Active"
+  },
+  "DeploymentPackage": {
+    "Description": "Lambda deployment package creation steps",
+    "Steps": [
+      "1. Navigate to lambda directory: cd lambda/",
+      "2. Install dependencies: pip install -r requirements.txt -t package/",
+      "3. Copy Lambda code: cp capacity_updater.py package/",
+      "4. Create ZIP: cd package && zip -r ../capacity_updater.zip . && cd ..",
+      "5. Upload to Lambda: aws lambda update-function-code --function-name urec-capacity-updater --zip-file fileb://capacity_updater.zip"
+    ]
+  },
+  "IAMRole": {
+    "RoleName": "urec-lambda-execution-role",
+    "Description": "IAM role for Lambda function to access DynamoDB",
+    "AssumeRolePolicyDocument": {
+      "Version": "2012-10-17",
+      "Statement": [
+        {
+          "Effect": "Allow",
+          "Principal": {
+            "Service": "lambda.amazonaws.com"
+          },
+          "Action": "sts:AssumeRole"
+        }
+      ]
+    },
+    "Policies": [
+      {
+        "PolicyName": "DynamoDBAccess",
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Action": [
+                "dynamodb:GetItem",
+                "dynamodb:PutItem",
+                "dynamodb:UpdateItem",
+                "dynamodb:Query",
+                "dynamodb:Scan"
+              ],
+              "Resource": "arn:aws:dynamodb:us-east-1:YOUR_ACCOUNT_ID:table/urec-capacity"
+            }
+          ]
+        }
+      },
+      {
+        "PolicyName": "CloudWatchLogs",
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Action": [
+                "logs:CreateLogGroup",
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+              ],
+              "Resource": "arn:aws:logs:us-east-1:YOUR_ACCOUNT_ID:log-group:/aws/lambda/urec-capacity-updater:*"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "APIGateway": {
+    "ApiName": "urec-capacity-api",
+    "Description": "API Gateway for UREC capacity updates from iPads",
+    "EndpointType": "REGIONAL",
+    "Resources": [
+      {
+        "Path": "/update",
+        "Method": "POST",
+        "Integration": "Lambda Function: urec-capacity-updater",
+        "RequestModel": {
+          "area_id": "string (required)",
+          "action": "string (required): 'enter' or 'exit'",
+          "count": "integer (optional): default 1",
+          "timestamp": "string (optional): ISO timestamp"
+        },
+        "CORS": {
+          "AllowOrigins": ["*"],
+          "AllowMethods": ["POST", "OPTIONS"],
+          "AllowHeaders": ["Content-Type", "Authorization"]
+        }
+      }
+    ],
+    "Throttling": {
+      "RateLimit": 100,
+      "BurstLimit": 200
+    },
+    "Authentication": {
+      "Type": "API_KEY",
+      "Description": "iPad apps should include API key in x-api-key header"
+    }
+  },
+  "Monitoring": {
+    "CloudWatchAlarms": [
+      {
+        "AlarmName": "urec-lambda-errors",
+        "MetricName": "Errors",
+        "Threshold": 10,
+        "EvaluationPeriods": 1,
+        "Period": 300,
+        "ComparisonOperator": "GreaterThanThreshold",
+        "TreatMissingData": "notBreaching"
+      },
+      {
+        "AlarmName": "urec-lambda-duration",
+        "MetricName": "Duration",
+        "Threshold": 5000,
+        "EvaluationPeriods": 2,
+        "Period": 300,
+        "ComparisonOperator": "GreaterThanThreshold"
+      }
+    ],
+    "LogRetention": "30 days",
+    "XRayTracing": "Enabled"
+  },
+  "Warmup": {
+    "Description": "Keep Lambda warm during peak hours to avoid cold starts",
+    "Schedule": "rate(5 minutes) during 6 AM - 11 PM weekdays",
+    "EventPayload": {
+      "warmup": true
+    }
+  }
+}

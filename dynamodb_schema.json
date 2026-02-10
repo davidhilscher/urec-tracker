@@ -1,0 +1,128 @@
+{
+  "TableName": "urec-capacity",
+  "Description": "UREC capacity tracking data - stores current capacity for each area",
+  "BillingMode": "PAY_PER_REQUEST",
+  "AttributeDefinitions": [
+    {
+      "AttributeName": "PK",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "SK",
+      "AttributeType": "S"
+    }
+  ],
+  "KeySchema": [
+    {
+      "AttributeName": "PK",
+      "KeyType": "HASH"
+    },
+    {
+      "AttributeName": "SK",
+      "KeyType": "RANGE"
+    }
+  ],
+  "Tags": [
+    {
+      "Key": "Project",
+      "Value": "UREC-Capacity-Tracker"
+    },
+    {
+      "Key": "Environment",
+      "Value": "Production"
+    },
+    {
+      "Key": "ManagedBy",
+      "Value": "CloudFormation"
+    }
+  ],
+  "PointInTimeRecoverySpecification": {
+    "PointInTimeRecoveryEnabled": true
+  },
+  "SSESpecification": {
+    "Enabled": true,
+    "SSEType": "KMS"
+  },
+  "StreamSpecification": {
+    "StreamEnabled": false
+  },
+  "Notes": {
+    "DataModel": {
+      "Description": "Single-table design for UREC capacity tracking",
+      "EntityTypes": [
+        {
+          "Type": "Area",
+          "PK": "AREA#<area_id>",
+          "SK": "METADATA",
+          "Attributes": [
+            "area_id (string): Unique identifier",
+            "name (string): Display name",
+            "current_count (number): Current occupancy",
+            "max_capacity (number): Maximum capacity",
+            "is_open (boolean): Whether area is open",
+            "last_updated (string): ISO timestamp",
+            "created_at (string): ISO timestamp"
+          ],
+          "Example": {
+            "PK": "AREA#weight-room",
+            "SK": "METADATA",
+            "area_id": "weight-room",
+            "name": "Weight Room",
+            "current_count": 45,
+            "max_capacity": 100,
+            "is_open": true,
+            "last_updated": "2024-02-07T14:30:00.000Z",
+            "created_at": "2024-01-01T00:00:00.000Z"
+          }
+        }
+      ],
+      "AccessPatterns": [
+        "Get all areas: Scan with SK = METADATA",
+        "Get single area: GetItem with PK = AREA#<area_id>, SK = METADATA",
+        "Update capacity: UpdateItem with atomic counter on current_count"
+      ]
+    },
+    "SampleAreas": [
+      {
+        "area_id": "weight-room",
+        "name": "Weight Room",
+        "max_capacity": 100
+      },
+      {
+        "area_id": "cardio",
+        "name": "Cardio Area",
+        "max_capacity": 60
+      },
+      {
+        "area_id": "track",
+        "name": "Indoor Track",
+        "max_capacity": 50
+      },
+      {
+        "area_id": "pool",
+        "name": "Swimming Pool",
+        "max_capacity": 40
+      },
+      {
+        "area_id": "basketball",
+        "name": "Basketball Courts",
+        "max_capacity": 30
+      },
+      {
+        "area_id": "racquetball",
+        "name": "Racquetball Courts",
+        "max_capacity": 20
+      },
+      {
+        "area_id": "climbing",
+        "name": "Climbing Wall",
+        "max_capacity": 15
+      },
+      {
+        "area_id": "group-fitness",
+        "name": "Group Fitness Studio",
+        "max_capacity": 40
+      }
+    ]
+  }
+}
