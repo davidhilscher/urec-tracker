@@ -128,10 +128,6 @@ python -m http.server 8080 --directory frontend
 
 MIT License - feel free to use for educational purposes
 
-## 👥 Contact
-
-Project Link: [https://github.com/davidhilscher/urec-tracker](https://github.com/davidhilscher/urec-tracker)
-
 ## Acknowledgments
 
 - Inspired by [JMU Parking Availability](https://www.jmu.edu/parking/index.shtml)
