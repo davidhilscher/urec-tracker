@@ -5,9 +5,9 @@
 
 set -e  # Exit on error
 
-echo "=========================================="
+echo "starting..."
 echo "UREC Capacity Tracker - Quick Start"
-echo "=========================================="
+echo "..."
 echo ""
 
 # Colors for output
@@ -88,9 +88,9 @@ fi
 
 # Print next steps
 echo ""
-echo "=========================================="
+echo "loading..."
 echo -e "${GREEN}✓${NC} Setup complete!"
-echo "=========================================="
+echo "loading..."
 echo ""
 echo "Next steps:"
 echo ""
